@@ -1,6 +1,8 @@
+[### NAME: THARRUN D
+### REG NO: 212224240170
+
 # Uploading temperature sensor data in Thing Speak cloud
-# Name : Tharrun D
-# Reference number : 24900893
+
 # AIM:
 To monitor the temperature sensor data in the Thing speak using an ESP32 controller.
 
@@ -73,65 +75,77 @@ Automatically act on your data and communicate using third-party services like T
 
 # PROGRAM:
 ```
+#include "ThingSpeak.h"
 #include <WiFi.h>
-#include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
-#define Soil_Moisture 34
-char ssid[] = "1";   // your network SSID (name) 
-char pass[] = "12345678";   // your network password
-int keyIndex = 0;            // your network key Index number (needed only for WEP)
-WiFiClient  client;
+#include "DHT.h"
 
-unsigned long myChannelNumber = 2787743;
-const int ChannelField = 1; 
-const char * myWriteAPIKey = "T5IOUX8JUG39FKKY";
 
-const int airValue = 4095;      // Analog value when the sensor is in dry air
-const int waterValue = 0;
-int percentage =0;
-void setup() {
-  Serial.begin(115200);  //Initialize serial
-  pinMode(Soil_Moisture, INPUT);
-  WiFi.mode(WIFI_STA);   
-  ThingSpeak.begin(client);  // Initialize ThingSpeak
+char ssid[] = "Akshay";
+char pass[] = "Loid D Ackerman :)";
+
+const int out = 23;
+long T;
+float temperature = 0;
+WiFiClient client;
+DHT dht(23, DHT11);
+
+unsigned long myChannelField = 2785416;
+const int TemperatureField = 1;
+const int HumidityField = 2;
+
+const char* myWriteAPIKey = "R7LNAVHQE1W3T0FA";
+
+void setup()
+{
+  Serial.begin(115200);
+  pinMode(out, INPUT);
+  ThingSpeak.begin(client);
+  dht.begin();
+  delay(1000);
 }
 
 void loop()
 {
- if (WiFi.status() != WL_CONNECTED)
+  if (WiFi.status() != WL_CONNECTED)
   {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(ssid);
     while (WiFi.status() != WL_CONNECTED)
     {
-      WiFi.begin(ssid, pass);
+      WiFi.begin(ssid,pass);
       Serial.print(".");
       delay(5000);
     }
     Serial.println("\nConnected.");
   }
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
 
- /* Soil MoistureSensor */
-  int Soil_Value = analogRead(Soil_Moisture);
-  percentage = map(Soil_Value, airValue, waterValue, 0, 100);
+  Serial.print("Temperature: ");
+  Serial.println(temperature);
+  Serial.println(" °C");
 
-  // Ensure the percentage stays in the 0-100 range
-  percentage = constrain(percentage, 0, 100);
-  Serial.println("Soil moisture percentage");
-  Serial.println(percentage);
-  ThingSpeak.writeField(myChannelNumber, ChannelField, percentage, myWriteAPIKey);
-  
-   delay(5000); // Wait 20 seconds to update the channel again
+  Serial.print("Humidity: ");
+  Serial.println(humidity);
+  Serial.println(" g.m-3");
+
+  ThingSpeak.writeField(myChannelField, TemperatureField, temperature, myWriteAPIKey);
+  ThingSpeak.writeField(myChannelField, HumidityField, humidity, myWriteAPIKey);
+  delay(100);
 }
 ```
+
 # CIRCUIT DIAGRAM:
 
-![circuit dig exp3](https://github.com/user-attachments/assets/741717a9-16f6-45cc-9438-20de91313c36)
+![Screenshot 2024-12-26 140252](https://github.com/user-attachments/assets/fe573641-489c-4f96-b92b-2f5cf5a14f9a)
 
 # OUTPUT:
-![exp3 (1)](https://github.com/user-attachments/assets/1c986989-e7c1-4aa8-a967-c8d1d77fea12)
+![Screenshot 2024-12-26 140048](https://github.com/user-attachments/assets/751a5a62-54ef-4d2e-a04c-d889c8f61db7)
 
-![exp3 (2)](https://github.com/user-attachments/assets/3e4b63b6-7fe2-4e96-8f2b-ec6b0b18b22e)
+![Screenshot 2024-12-26 140101](https://github.com/user-attachments/assets/e928adde-8541-43ee-9be9-1f1d1db5e2f6)
 
 # RESULT:
+
 Thus the temperature sensor values are updated in the Thing speak using ESP32 controller.
 
+](https://github.com/Tharun53666/Monitoring-Light-intensity-value-in-Thing-speak-cloud-)
